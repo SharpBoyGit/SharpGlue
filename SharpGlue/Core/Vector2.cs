@@ -59,7 +59,7 @@ namespace SharpGlue.Core
         public static Vector2 operator /(Vector2 v1, Vector2 v2) => new Vector2(
             v1.X / v2.X,
             v2.Y / v1.Y);
-
+            
         /// <summary>
         /// Returns a zero point vector 2
         /// </summary>

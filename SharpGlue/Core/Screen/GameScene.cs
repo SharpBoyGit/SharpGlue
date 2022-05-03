@@ -107,7 +107,13 @@ namespace SharpGlue.Core.Screen
         // from being paused or tombstoned.
         // instancePreserved is true if the game was preserved during deactivation, false if the screen is
         // just being added or if the game was tombstoned. On Xbox and Windows this will always be false.
-        public virtual void LoadContent(bool instancePreserved, ContentManager content) { }
+        public virtual void LoadContent(bool instancePreserved, ContentManager content) {
+            foreach(var obj in GameObjectCollection.objects)
+                if(obj is Controls.ControlBase) {
+                    var control = (Controls.ControlBase)obj;
+                    control.LoadContent(content);
+                }
+        }
 
         // Deactivates the screen. Called when the game is being deactivated due to pausing or tombstoning.
         protected virtual void Deactivate() { }
@@ -140,6 +146,12 @@ namespace SharpGlue.Core.Screen
                     ? GameSceneState.TransitionOn
                     : GameSceneState.Active;
             }
+
+            foreach(var obj in GameObjectCollection.objects)
+                if(obj is Controls.ControlBase) {
+                    var control = (Controls.ControlBase)obj;
+                    control.Update(gameTime);
+                }
         }
 
         private bool UpdateTransitionPosition(GameTime gameTime, TimeSpan time, int direction) {
@@ -161,8 +173,20 @@ namespace SharpGlue.Core.Screen
             return true;    // Otherwise we are still busy transitioning
         }
 
-        public virtual void HandleInput(GameTime gameTime, InputSystem input) { }
-        public virtual void Draw(GameTime gameTime ,SpriteBatch spriteBatch) { }
+        public virtual void HandleInput(GameTime gameTime, InputSystem input) { 
+            foreach(var obj in GameObjectCollection.objects)
+                if(obj is Controls.ControlBase) {
+                    var control = (Controls.ControlBase)obj;
+                    control._doInputCheck(input);
+                }
+        }
+        public virtual void Draw(GameTime gameTime ,SpriteBatch spriteBatch) { 
+            foreach(var obj in GameObjectCollection.objects)
+                if(obj is Controls.ControlBase) {
+                    var control = (Controls.ControlBase)obj;
+                    control.Draw(gameTime, spriteBatch);
+                }
+        }
 
         // Unlike ScreenManager.RemoveScreen, which instantly kills the screen, this method respects
         // the transition timings and will give the screen a chance to gradually transition off.
